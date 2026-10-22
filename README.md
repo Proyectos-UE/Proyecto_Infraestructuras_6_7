@@ -87,13 +87,13 @@ curl -i -X POST http://127.0.0.1:8000/ingest
 export API_KEY=$(sed -n 's/^API_KEY=//p' .env)
 
 # 4. Dar de alta un producto (HTTP 201)
-curl -i -X POST http://127.0.0.1:8000/watchlist \\
-  -H 'Content-Type: application/json' -H "X-API-Key: $API_KEY" \\
+curl -i -X POST http://127.0.0.1:8000/watchlist \
+  -H 'Content-Type: application/json' -H "X-API-Key: $API_KEY" \
   -d '{"term":"mini proyectores"}'
 
 # 5. Error por datos inválidos (HTTP 422)
-curl -i -X POST http://127.0.0.1:8000/watchlist \\
-  -H 'Content-Type: application/json' -H "X-API-Key: $API_KEY" \\
+curl -i -X POST http://127.0.0.1:8000/watchlist \
+  -H 'Content-Type: application/json' -H "X-API-Key: $API_KEY" \
   -d '{"term":""}'
 
 # 6. Ingesta real por HTTP desde el servicio externo (HTTP 200)
