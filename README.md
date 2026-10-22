@@ -176,3 +176,37 @@ docs/                                Arquitectura, fuentes y planificación
 ```
 
 Pendiente en fases siguientes: backtesting histórico con productos virales, despliegue en nube, validación con fuentes de comercio electrónico y ampliación a otras redes. Más información en `docs/arquitectura.md`, `docs/fuentes_de_datos.md` y `docs/planificacion.md`.
+
+## 9. Validación integral y backtest reproducible
+
+La verificación con Docker, casos HTTP, PostgreSQL e ingesta desde Wikimedia se documenta en [`docs/validacion_entrega.md`](docs/validacion_entrega.md).
+
+Para generar los resultados reproducibles del detector: `python scripts/backtest.py --guardar`. El notebook está en [`notebooks/backtest_tendencias.ipynb`](notebooks/backtest_tendencias.ipynb). Instala `requirements-dev.txt` para disponer de Matplotlib. **El backtest con cinco picos y cinco controles emplea datos artificiales: no demuestra predicción real de ventas ni viralidad.** Véase [`docs/backtest.md`](docs/backtest.md).
+
+### Importar CSV de Google Trends con Python
+
+Si el profesor quiere observar la fuente propuesta originalmente (Google
+Trends), descarga manualmente desde trends.google.es el CSV de un término y
+ejecuta desde la raíz:
+
+```bash
+source .venv/bin/activate
+PYTHONPATH=src python scripts/importar_trends_csv.py data/raw/archivo.csv "mini proyectores"
+```
+
+Si ejecutas la API en Docker, usa las siguientes instrucciones para importar
+en **la misma base de datos PostgreSQL**:
+
+```bash
+docker compose cp data/raw/archivo.csv api:/tmp/trends.csv
+docker compose exec api python scripts/importar_trends_csv.py /tmp/trends.csv "mini proyectores"
+```
+
+El importador valida fechas e índices (0-100), rechaza filas mal formadas,
+fechas repetidas y registros fuera de rango y evita duplicados en la base de
+datos. Después se consulta con
+`GET /trends/mini%20proyectores?source=google_trends_csv`.
+
+El CSV se obtiene manualmente; **no hay una API automática oficial de Google
+Trends conectada a este importador**. Los números de Google Trends son índices
+relativos, no cantidades exactas de búsquedas.
